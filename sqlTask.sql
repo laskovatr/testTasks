@@ -1,4 +1,4 @@
-﻿CREATE SCHEMA geo_test;
+CREATE SCHEMA geo_test;
 
 create table geo_test.test_point(
     id bigserial primary key,
@@ -13,12 +13,14 @@ create table geo_test.task(
     name varchar(255)
 );
 
-ALTER TABLE test_point
+ALTER TABLE geo_test.test_point
 ADD CONSTRAINT fk_id
 FOREIGN KEY (task)
 REFERENCES geo_test.task(id);
 
-create index on test_point(id,task); 
+create index on geo_test.test_point(id,task); 
+
+insert into geo_test.task(id, name) values (1, 'testName');
 
 INSERT INTO geo_test.test_point(id, task, x,y,z) VALUES (1,1,1,0,0);
 INSERT INTO geo_test.test_point(id, task, x,y,z) VALUES (2,1,0,1,0);
