@@ -1,4 +1,7 @@
 #include "geometry.h"
+#include <cmath>
+
+
 point3d::point3d()
 {
 }
@@ -53,8 +56,56 @@ bool isBeforeTriangle(triangle t, point3d p)
     return false;
 }
 
+void rotateOy(point3d& p, double oy)
+{
+    double oldX = p.x;
+    double oldZ = p.z;
+    p.x = oldX*cos(oy) + oldZ*sin(oy);
+    p.z = -oldX*sin(oy) + oldZ*cos(oy);
+}
+
+void rotateOx(point3d& p, double ox)
+{
+    double oldY = p.y;
+    double oldZ = p.z;
+    p.y = oldY*cos(ox) + oldZ*sin(ox);
+    p.z = -oldY*sin(ox) + oldZ*cos(ox);
+}
+
+void rotatePoints(point3d& p, triangle& t, double ox, double oy)
+{
+    rotateOy(p,oy);
+    rotateOy(t.p1,oy);
+    rotateOy(t.p2,oy);
+    rotateOy(t.p3,oy);
+    //std::cout<< p.x << ' ' <<  p.y <<  ' ' <<p.z;
+    rotateOx(p,ox);
+    rotateOx(t.p1,ox);
+    rotateOx(t.p2,ox);
+    rotateOx(t.p3,ox);
+}
+
+void findOy(double& oy, point3d p)
+{
+    oy =  acos( (0*p.x+p.z*p.z)/(sqrt((double)0*0+p.z*p.z)*sqrt((double)p.x*p.x+p.z*p.z)));
+}
+
+void findOx(double& ox, point3d p)
+{
+    ox = acos( (p.z*p.z+0*p.y)/(sqrt((double)p.z*p.z+0*0)*sqrt((double)p.z*p.z+p.y*p.y)));
+}
+
+void findAnglesForRotate(double& ox, double& oy, point3d p)
+{
+    findOy(oy, p);
+    findOx(ox, p);
+}
+
 bool isVisible(triangle t, point3d p)
 {
+    double ox, oy;
+    findAnglesForRotate(ox, oy, p);
+    rotatePoints(p, t, -ox,-oy);
     if (t.p1.z > p.z && t.p2.z > p.z && t.p3.z > p.z)
     {
         return true;
